@@ -1,12 +1,9 @@
-import { Upload, Play, Disc } from 'lucide-react';
-
 import { supabase } from '@/lib/supabase'
-import MediaCard from '@/components/MediaCard'
+import FeedPost from '@/components/feed/FeedPost'
 
-export const revalidate = 0 // Disable cache for immediate development feedback
+export const revalidate = 0
 
 export default async function Home() {
-    // Fetch posts from Supabase
     const { data: posts, error } = await supabase
         .from('posts')
         .select('*, comments(count), likes(count)')
@@ -16,75 +13,64 @@ export default async function Home() {
         console.error('Error fetching posts:', error)
     }
 
-    // Fallback mock data if DB is empty or fails
     const displayPosts = posts?.length ? posts : [
         {
             id: 'mock-1',
-            title: 'Neon Dreams',
+            title: 'Neon Dreams: A Synthwave Journey',
+            description: 'just generated this awesome track representing Tokyo at night. #synthwave #ai #music',
             author_id: 'AI Composer',
             media_type: 'audio',
             cover_url: null,
             comments: [{ count: 12 }],
-            likes: [{ count: 340 }]
+            likes: [{ count: 340 }],
+            created_at: new Date().toISOString()
         },
         {
             id: 'mock-2',
-            title: 'Cyberpunk City Flow',
+            title: 'Digital Horizon Visualized',
+            description: 'Check out this music video I made using the new model!',
             author_id: 'VisualBot',
             media_type: 'video',
             cover_url: null,
             comments: [{ count: 5 }],
-            likes: [{ count: 128 }]
-        },
-        {
-            id: 'mock-3',
-            title: 'Aurora Lullaby',
-            author_id: 'SynthMaster',
-            media_type: 'audio',
-            cover_url: null,
-            comments: [{ count: 42 }],
-            likes: [{ count: 892 }]
-        },
-        {
-            id: 'mock-4',
-            title: 'Digital Horizon',
-            author_id: 'Visionary AI',
-            media_type: 'video',
-            cover_url: null,
-            comments: [{ count: 8 }],
-            likes: [{ count: 415 }]
+            likes: [{ count: 128 }],
+            created_at: new Date(Date.now() - 86400000).toISOString()
         }
     ]
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-8">
-
-            <div className="mb-10 text-center md:text-left">
-                <h1 className="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-electric-purple to-aurora-green">
-                    探索 AI 创作的无限可能
-                </h1>
-                <p className="text-lg text-gray-400 max-w-2xl">
-                    欢迎来到 AI Music Hub，这里汇聚了最前沿的 AI 音乐与视频生成作品。
-                </p>
+        <div className="w-full">
+            {/* Mobile Top Header (hidden on desktop) */}
+            <div className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-gray-800/60 p-4 lg:hidden flex justify-between items-center">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-aurora-green to-electric-purple flex items-center justify-center font-bold text-white text-xs">
+                    GU
+                </div>
+                <h1 className="font-bold text-lg">主页</h1>
+                <div className="w-8"></div> {/* Spacer for centering */}
             </div>
 
-            {/* CSS Grid for Masonry-like structural layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {/* Desktop Header */}
+            <div className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-gray-800/60 hidden lg:block p-4">
+                <h1 className="text-xl font-bold text-white">主页</h1>
+            </div>
+
+            {/* Post Feed */}
+            <div className="flex flex-col">
                 {displayPosts.map((post: any) => (
-                    <MediaCard
+                    <FeedPost
                         key={post.id}
                         id={post.id}
                         title={post.title}
+                        description={post.description || ''}
                         author={post.author_id}
                         mediaType={post.media_type}
                         coverUrl={post.cover_url}
                         likesCount={post.likes?.[0]?.count || 0}
                         commentsCount={post.comments?.[0]?.count || 0}
+                        createdAt={post.created_at}
                     />
                 ))}
             </div>
         </div>
     )
 }
-
-
