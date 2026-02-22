@@ -17,6 +17,12 @@ const config: Config = {
                 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'float': 'float 6s ease-in-out infinite',
             },
+            colors: {
+                'electric-purple': '#8a2be2',
+                'aurora-green': '#00fa9a',
+                background: '#0a0a0a',
+                card: '#1a1a1a',
+            },
             keyframes: {
                 float: {
                     '0%, 100%': { transform: 'translateY(0)' },
