@@ -39,19 +39,10 @@ export default async function Home() {
     ]
 
     return (
-        <div className="w-full h-full flex flex-col pt-4 px-4 pb-20 sm:pb-4">
-            {/* Desktop Header */}
-            <div className="sticky top-0 z-40 bg-slate-50/80 backdrop-blur-md pb-4 hidden lg:block mb-4 border-b border-transparent">
-                <h1 className="text-xl font-bold text-slate-900 text-center">主页</h1>
-            </div>
-
-            {/* Mobile Top Header (hidden on desktop) */}
-            <div className="sticky top-0 z-40 bg-slate-50/80 backdrop-blur-md pb-4 lg:hidden flex justify-between items-center mb-4">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs shadow-sm">
-                    U
-                </div>
-                <h1 className="font-bold text-lg text-slate-900">主页</h1>
-                <div className="w-8"></div> {/* Spacer for centering */}
+        <div className="w-full flex flex-col pb-20 sm:pb-0 bg-[#FFFFFF]">
+            {/* Desktop / Mobile Common Header */}
+            <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-[#EFF3F4] flex items-center justify-between px-4 h-[53px] cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                <h1 className="text-[20px] font-bold text-[#0F1419]">主页</h1>
             </div>
 
             {/* Post Feed */}

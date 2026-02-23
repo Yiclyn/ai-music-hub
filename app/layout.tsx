@@ -7,7 +7,7 @@ import './globals.css'
 import { AuthProvider } from '@/components/providers/AuthContext'
 
 export const metadata: Metadata = {
-    title: 'AI Music Hub',
+    title: 'AI Music Hub', // "AI 音乐创作交流社区" matches user request
     description: 'AI Music Hub - AI 音乐创作交流社区',
 }
 
@@ -18,35 +18,44 @@ export default function RootLayout({
 }) {
     return (
         <html lang="zh">
-            <body className="bg-slate-100 text-slate-900 antialiased min-h-screen">
+            <body className="bg-[#FFFFFF] text-[#0F1419] antialiased min-h-screen">
                 <AuthProvider>
-                    {/* 全局居中容器：内容区最大 1280px，水平居中 */}
-                    <div className="min-h-screen flex justify-center">
-                        {/* 三栏并排，整体居中 */}
-                        <div className="flex w-full max-w-[1280px]">
+                    {/* Global Centered Wrapper: X's typical wide breakpoint centers content up to 1265px */}
+                    <div className="min-h-screen flex justify-center w-full bg-[#FFFFFF]">
+                        {/* 3-Column Layout Row */}
+                        <div className="flex justify-between w-full max-w-[1265px] h-full min-h-screen">
 
-                            {/* 左侧导航：桌面端固定宽度，移动端隐藏 */}
-                            <LeftSidebar />
+                            {/* Left Sidebar: 275px fixed strictly on desktop (lg) */}
+                            <header className="hidden sm:flex w-[88px] xl:w-[275px] shrink-0 flex-col items-end xl:items-start px-2 xl:px-4">
+                                <LeftSidebar />
+                            </header>
 
-                            {/* 中间内容流：固定 650px，两侧有分隔线 */}
-                            <main className="flex-1 min-w-0 max-w-[650px] border-x border-slate-200 bg-white pb-20 lg:pb-4 min-h-screen">
-                                {children}
-                            </main>
+                            {/* Middle Feed: 600px fixed width, borders on left/right matching #EFF3F4 */}
+                            <main className="w-full sm:w-[600px] shrink-0 border-x-layout pb-20 sm:pb-4 min-h-screen">
+                                {/* Outer centering wrapper — max 1265px, centered */}
+                                <div className="max-w-[1265px] mx-auto w-full flex justify-center lg:justify-between min-h-screen">
 
-                            {/* 右侧信息栏：桌面端固定宽度，移动端隐藏 */}
-                            <RightSidebar />
-                        </div>
-                    </div>
+                                    {/* Left Sidebar Container */}
+                                    <div className="hidden sm:block shrink-0 px-2 lg:px-0">
+                                        <LeftSidebar />
+                                    </div>
 
-                    <BottomNav />
-                    {/* 悬浮音频播放器 */}
-                    <div className="fixed bottom-16 lg:bottom-0 left-0 right-0 z-50 pointer-events-none">
-                        <div className="pointer-events-auto">
-                            <AudioPlayer />
-                        </div>
-                    </div>
-                </AuthProvider>
-            </body>
-        </html>
-    )
+                                    {/* Main Feed Column */}
+                                    <main className="w-full sm:max-w-[600px] flex-1 border-x border-[#EFF3F4] bg-[#FFFFFF] pb-20 lg:pb-0 shrink-0 min-h-screen">
+                                        {children}
+                                    </main>
+
+                                    {/* Right Sidebar Container */}
+                                    <div className="hidden lg:block shrink-0 mr-2 xl:mr-4">
+                                        <RightSidebar />
+                                    </div>
+
+                                </div>
+
+                                <BottomNav />
+                                <AudioPlayer />
+                            </AuthProvider>
+                        </body>
+                    </html>
+                    )
 }
