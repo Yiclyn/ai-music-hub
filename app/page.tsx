@@ -39,19 +39,19 @@ export default async function Home() {
     ]
 
     return (
-        <div className="w-full">
-            {/* Mobile Top Header (hidden on desktop) */}
-            <div className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-gray-800/60 p-4 lg:hidden flex justify-between items-center">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-aurora-green to-electric-purple flex items-center justify-center font-bold text-white text-xs">
-                    GU
-                </div>
-                <h1 className="font-bold text-lg">主页</h1>
-                <div className="w-8"></div> {/* Spacer for centering */}
+        <div className="w-full h-full flex flex-col pt-4 px-4 pb-20 sm:pb-4">
+            {/* Desktop Header */}
+            <div className="sticky top-0 z-40 bg-slate-50/80 backdrop-blur-md pb-4 hidden lg:block mb-4 border-b border-transparent">
+                <h1 className="text-xl font-bold text-slate-900">主页</h1>
             </div>
 
-            {/* Desktop Header */}
-            <div className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-gray-800/60 hidden lg:block p-4">
-                <h1 className="text-xl font-bold text-white">主页</h1>
+            {/* Mobile Top Header (hidden on desktop) */}
+            <div className="sticky top-0 z-40 bg-slate-50/80 backdrop-blur-md pb-4 lg:hidden flex justify-between items-center mb-4">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs shadow-sm">
+                    U
+                </div>
+                <h1 className="font-bold text-lg text-slate-900">主页</h1>
+                <div className="w-8"></div> {/* Spacer for centering */}
             </div>
 
             {/* Post Feed */}
@@ -74,3 +74,4 @@ export default async function Home() {
         </div>
     )
 }
+
