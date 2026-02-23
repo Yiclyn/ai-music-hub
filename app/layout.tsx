@@ -18,27 +18,28 @@ export default function RootLayout({
 }) {
     return (
         <html lang="zh">
-            <body className="bg-white text-slate-900 antialiased min-h-screen">
+            <body className="bg-slate-100 text-slate-900 antialiased min-h-screen">
                 <AuthProvider>
-                    {/* Outer centering wrapper — max 1280px, centered horizontally */}
-                    <div className="max-w-[1280px] mx-auto w-full px-4 min-h-screen">
-                        {/* Three-column flex layout */}
-                        <div className="flex justify-center gap-0 min-h-screen">
-                            {/* Left Sidebar — hidden on mobile/tablet */}
+                    {/* 全局居中容器：内容区最大 1280px，水平居中 */}
+                    <div className="min-h-screen flex justify-center">
+                        {/* 三栏并排，整体居中 */}
+                        <div className="flex w-full max-w-[1280px]">
+
+                            {/* 左侧导航：桌面端固定宽度，移动端隐藏 */}
                             <LeftSidebar />
 
-                            {/* Main Feed — visual center, fixed width */}
-                            <main className="w-full max-w-[650px] flex-1 border-x border-slate-200 pb-20 lg:pb-4 bg-white min-h-screen">
+                            {/* 中间内容流：固定 650px，两侧有分隔线 */}
+                            <main className="flex-1 min-w-0 max-w-[650px] border-x border-slate-200 bg-white pb-20 lg:pb-4 min-h-screen">
                                 {children}
                             </main>
 
-                            {/* Right Sidebar — fixed width, hidden on tablet and below */}
+                            {/* 右侧信息栏：桌面端固定宽度，移动端隐藏 */}
                             <RightSidebar />
                         </div>
                     </div>
 
                     <BottomNav />
-                    {/* AudioPlayer floating above BottomNav */}
+                    {/* 悬浮音频播放器 */}
                     <div className="fixed bottom-16 lg:bottom-0 left-0 right-0 z-50 pointer-events-none">
                         <div className="pointer-events-auto">
                             <AudioPlayer />
