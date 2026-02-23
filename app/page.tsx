@@ -42,7 +42,7 @@ export default async function Home() {
         <div className="w-full h-full flex flex-col pt-4 px-4 pb-20 sm:pb-4">
             {/* Desktop Header */}
             <div className="sticky top-0 z-40 bg-slate-50/80 backdrop-blur-md pb-4 hidden lg:block mb-4 border-b border-transparent">
-                <h1 className="text-xl font-bold text-slate-900">主页</h1>
+                <h1 className="text-xl font-bold text-slate-900 text-center">主页</h1>
             </div>
 
             {/* Mobile Top Header (hidden on desktop) */}
