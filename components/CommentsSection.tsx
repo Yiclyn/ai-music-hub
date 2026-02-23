@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Send } from 'lucide-react'
 
@@ -36,8 +36,8 @@ export default function CommentsSection({ postId }: { postId: string }) {
             .on(
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'comments', filter: `post_id=eq.${postId}` },
-                (payload) => {
-                    setComments((prev) => [...prev, payload.new as Comment])
+                (payload: any) => {
+                    setComments((prev: Comment[]) => [...prev, payload.new as Comment])
                 }
             )
             .subscribe()
@@ -114,7 +114,7 @@ export default function CommentsSection({ postId }: { postId: string }) {
                     <input
                         type="text"
                         value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewComment(e.target.value)}
                         placeholder="写下你的想法..."
                         className="flex-1 bg-black/50 border border-white/10 rounded-full pl-4 pr-12 py-2.5 text-sm focus:outline-none focus:border-electric-purple transition-colors"
                     />
