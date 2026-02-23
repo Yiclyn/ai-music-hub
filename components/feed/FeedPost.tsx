@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { MessageCircle, Repeat2, Heart, Share, Play, BarChart2 } from 'lucide-react'
 import { useAuth } from '@/components/providers/AuthContext'
@@ -52,7 +52,7 @@ export default function FeedPost({
         if (requireLogin()) return
 
         setLiked(!liked)
-        setLikes(prev => liked ? prev - 1 : prev + 1)
+        setLikes((prev: number) => liked ? prev - 1 : prev + 1)
 
         setIsAnimating(true)
         setTimeout(() => setIsAnimating(false), 800)
@@ -65,7 +65,7 @@ export default function FeedPost({
         <article className="flex gap-3 px-4 py-3 bg-[#FFFFFF] border-b border-[#EFF3F4] hover:bg-[#F7F9F9] transition cursor-pointer">
             {/* Left Avatar Column */}
             <div className="shrink-0 flex flex-col items-center pt-1">
-                <Link href={`/profile/${author}`} onClick={e => e.stopPropagation()}>
+                <Link href={`/profile/${author}`} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                     <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-[16px] hover:opacity-80 transition">
                         {author.substring(0, 1).toUpperCase()}
                     </div>
@@ -78,14 +78,14 @@ export default function FeedPost({
                 {/* Header (Author & Date) */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 min-w-0">
-                        <Link href={`/profile/${author}`} className="font-bold text-[#0F1419] hover:underline transition truncate text-[15px]" onClick={e => e.stopPropagation()}>
+                        <Link href={`/profile/${author}`} className="font-bold text-[#0F1419] hover:underline transition truncate text-[15px]" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                             {author}
                         </Link>
                         <span className="text-[#536471] text-[15px] truncate max-w-[120px]">@{author.toLowerCase().replace(/\s/g, '')}</span>
                         <span className="text-[#536471] text-[15px]">·</span>
                         <span className="text-[#536471] text-[15px] hover:underline">{formattedDate}</span>
                     </div>
-                    <button className="text-[#536471] hover:text-[#1D9BF0] transition px-2 rounded-full hover:bg-blue-50" onClick={e => e.stopPropagation()}>
+                    <button className="text-[#536471] hover:text-[#1D9BF0] transition px-2 rounded-full hover:bg-blue-50" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                         ···
                     </button>
                 </div>
@@ -102,7 +102,7 @@ export default function FeedPost({
                 {mediaType === 'audio' ? (
                     <div
                         className="w-full h-32 rounded-2xl relative flex flex-col justify-end p-4 group border border-[#EFF3F4] bg-[#F7F9F9]"
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent) => {
                             e.preventDefault();
                         }}
                     >
@@ -183,7 +183,21 @@ export default function FeedPost({
                         )}
                     </button>
 
-                    <button className="flex items-center gap-1 group transition-colors hover:text-[#1D9BF0]" onClick={e => e.preventDefault()}>
+                    <button className="flex items-center gap-2 group/btn" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                        <div className="p-2 rounded-full group-hover/btn:bg-blue-50 transition text-[#536471] group-hover/btn:text-[#1D9BF0]">
+                            <MessageCircle size={18} className="stroke-[2px]" />
+                        </div>
+                        <span className="text-[13px] text-[#536471] group-hover/btn:text-[#1D9BF0]">{commentsCount > 0 ? commentsCount : ''}</span>
+                    </button>
+
+                    <button className="flex items-center gap-2 group/btn" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                        <div className="p-2 rounded-full group-hover/btn:bg-green-50 transition text-[#536471] group-hover/btn:text-[#00BA7C]">
+                            <Repeat2 size={18} className="stroke-[2px]" />
+                        </div>
+                        <span className="text-[13px] text-[#536471] group-hover/btn:text-[#00BA7C]"></span>
+                    </button>
+
+                    <button className="flex items-center gap-1 group transition-colors hover:text-[#1D9BF0]" onClick={(e: React.MouseEvent) => e.preventDefault()}>
                         <div className="p-2 -ml-2 rounded-full group-hover:bg-[#E1EEF6] transition-colors">
                             <BarChart2 size={18.5} strokeWidth={1.8} />
                         </div>
@@ -191,7 +205,7 @@ export default function FeedPost({
                     </button>
 
                     <div className="flex items-center gap-0">
-                        <button className="flex items-center group transition-colors hover:text-[#1D9BF0]" onClick={e => e.preventDefault()}>
+                        <button className="flex items-center group transition-colors hover:text-[#1D9BF0]" onClick={(e: React.MouseEvent) => e.preventDefault()}>
                             <div className="p-2 rounded-full group-hover:bg-[#E1EEF6] transition-colors">
                                 <Share size={18.5} strokeWidth={1.8} />
                             </div>
@@ -203,4 +217,3 @@ export default function FeedPost({
         </article>
     )
 }
-
