@@ -124,7 +124,7 @@ export default function UploadPage() {
 
                 {/* Drag and drop zone */}
                 <div
-                    onDragOver={(e) => e.preventDefault()}
+                    onDragOver={(e: React.DragEvent) => e.preventDefault()}
                     onDrop={handleDrop}
                     className={`border-2 border-dashed ${file ? 'border-blue-500 bg-blue-50' : 'border-slate-300 hover:border-blue-400 bg-slate-50'} rounded-2xl p-12 text-center transition-all cursor-pointer`}
                     onClick={() => document.getElementById('file-upload')?.click()}
@@ -160,7 +160,7 @@ export default function UploadPage() {
                             required
                             type="text"
                             value={title}
-                            onChange={e => setTitle(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                             className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition shadow-sm"
                             placeholder="为你的 AI 大作起个名字..."
                         />
@@ -170,7 +170,7 @@ export default function UploadPage() {
                         <label className="block text-sm font-medium text-slate-700 mb-2">作品描述 (可选)</label>
                         <textarea
                             value={description}
-                            onChange={e => setDescription(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                             className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 h-32 resize-none focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition shadow-sm"
                             placeholder="分享一下你的创作灵感..."
                         />

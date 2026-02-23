@@ -120,7 +120,7 @@ export default function FeedPost({
                         <div className="absolute top-3 left-3 bg-white/80 px-2 py-0.5 rounded text-[11px] font-bold text-[#536471] uppercase tracking-wide">Audio</div>
                     </div>
                 ) : (
-                    <Link href={`/video/${id}`} onClick={e => e.stopPropagation()} className="block">
+                    <Link href={`/video/${id}`} onClick={(e: React.MouseEvent) => e.stopPropagation()} className="block">
                         <div className="w-full aspect-video rounded-2xl relative overflow-hidden bg-[#EFF3F4] group border border-[#EFF3F4]">
                             <div
                                 className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
@@ -141,7 +141,7 @@ export default function FeedPost({
 
                     <button
                         className="flex items-center gap-1 group transition-colors hover:text-[#1D9BF0]"
-                        onClick={e => {
+                        onClick={(e: React.MouseEvent) => {
                             e.preventDefault()
                             e.stopPropagation()
                             requireLogin()
@@ -155,7 +155,7 @@ export default function FeedPost({
 
                     <button
                         className="flex items-center gap-1 group transition-colors hover:text-[#00BA7C]"
-                        onClick={e => {
+                        onClick={(e: React.MouseEvent) => {
                             e.preventDefault()
                             e.stopPropagation()
                             requireLogin()

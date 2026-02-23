@@ -49,7 +49,7 @@ export default function LoginPage() {
                         <input
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                             className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition"
                             placeholder="你的邮箱地址"
                         />
@@ -59,7 +59,7 @@ export default function LoginPage() {
                         <input
                             type="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                             className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition"
                             placeholder="密码"
                         />
