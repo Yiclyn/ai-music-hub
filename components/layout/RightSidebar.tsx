@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, Flame, UserPlus } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useAuth } from '@/components/providers/AuthContext'
 import Link from 'next/link'
 
@@ -87,9 +87,9 @@ export default function RightSidebar() {
 
             {/* Footer Text */}
             <div className="text-[13px] text-[#536471] mt-4 px-4 flex flex-wrap gap-x-3 gap-y-1 mb-6">
-                <a href="#" className="hover:underline">服务条款</a>
-                <a href="#" className="hover:underline">隐私政策</a>
-                <a href="#" className="hover:underline">Cookie 政策</a>
+                <Link href="/" className="hover:underline">服务条款</Link>
+                <Link href="/" className="hover:underline">隐私政策</Link>
+                <Link href="/" className="hover:underline">Cookie 政策</Link>
                 <span>© 2026 AI Music Hub.</span>
             </div>
 
