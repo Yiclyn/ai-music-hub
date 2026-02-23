@@ -18,21 +18,27 @@ export default function RootLayout({
 }) {
     return (
         <html lang="zh">
-            <body className="bg-slate-50 text-slate-900 antialiased min-h-screen">
+            <body className="bg-white text-slate-900 antialiased min-h-screen">
                 <AuthProvider>
-                    <div className="max-w-7xl mx-auto flex justify-center min-h-screen">
-                        <LeftSidebar />
+                    {/* Outer centering wrapper — max 1280px, centered horizontally */}
+                    <div className="max-w-[1280px] mx-auto w-full px-4 min-h-screen">
+                        {/* Three-column flex layout */}
+                        <div className="flex justify-center gap-0 min-h-screen">
+                            {/* Left Sidebar — hidden on mobile/tablet */}
+                            <LeftSidebar />
 
-                        {/* Main Content Area */}
-                        <main className="flex-1 w-[650px] max-w-[650px] border-r border-slate-200 pb-20 lg:pb-24 bg-slate-50 shrink-0">
-                            {children}
-                        </main>
+                            {/* Main Feed — visual center, fixed width */}
+                            <main className="w-full max-w-[650px] flex-1 border-x border-slate-200 pb-20 lg:pb-4 bg-white min-h-screen">
+                                {children}
+                            </main>
 
-                        <RightSidebar />
+                            {/* Right Sidebar — fixed width, hidden on tablet and below */}
+                            <RightSidebar />
+                        </div>
                     </div>
 
                     <BottomNav />
-                    {/* AudioPlayer is now floating above BottomNav */}
+                    {/* AudioPlayer floating above BottomNav */}
                     <div className="fixed bottom-16 lg:bottom-0 left-0 right-0 z-50 pointer-events-none">
                         <div className="pointer-events-auto">
                             <AudioPlayer />
