@@ -102,9 +102,11 @@ export default function UploadPage() {
                 router.refresh()
             }, 1000)
 
-        } catch (error: any) {
-            console.error(error)
-            setMessage(`上传失败: ${error.message}`)
+        } catch (error) {
+            const err = error as Error;
+            // Assuming setError was a typo and should be setMessage, or a new state variable was intended.
+            // Given setMessage is already used for displaying errors, we'll use it here.
+            setMessage(`上传失败: ${err.message || '发布失败，请重试'}`);
         } finally {
             setIsUploading(false)
         }

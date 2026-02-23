@@ -47,7 +47,17 @@ export default async function Home() {
 
             {/* Post Feed */}
             <div className="flex flex-col">
-                {displayPosts.map((post: any) => (
+                {displayPosts.map((post: {
+                    id: string;
+                    title: string;
+                    description?: string | null;
+                    author_id: string;
+                    media_type: 'audio' | 'video';
+                    cover_url: string | null;
+                    likes?: { count: number }[];
+                    comments?: { count: number }[];
+                    created_at: string;
+                }) => (
                     <FeedPost
                         key={post.id}
                         id={post.id}
