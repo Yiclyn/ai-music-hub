@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { MessageCircle, Repeat2, Heart, Share, Play, BarChart2 } from 'lucide-react'
 import { useAuth } from '@/components/providers/AuthContext'
-import { useRouter } from 'next/navigation'
 
 interface FeedPostProps {
     id: string
