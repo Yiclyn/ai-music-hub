@@ -5,7 +5,7 @@ export default function LeftSidebar() {
     const navItems = [
         { label: "首页", icon: Home, href: "/" },
         { label: "探索", icon: Hash, href: "/" },
-        { label: "个人", icon: User, href: "/" },
+        { label: "个人中心", icon: User, href: "/" },
     ];
 
     return (
@@ -17,10 +17,10 @@ export default function LeftSidebar() {
                     className="flex h-12 w-12 items-center justify-center rounded-full hover:bg-slate-100 transition xl:w-fit xl:px-4 xl:py-3 xl:h-auto"
                 >
                     <span className="text-xl font-bold text-slate-900 hidden xl:inline">
-                        AI Music Hub
+                        X
                     </span>
                     <span className="text-xl font-bold text-slate-900 xl:hidden">
-                        🎵
+                        X
                     </span>
                 </Link>
 

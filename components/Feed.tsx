@@ -57,7 +57,18 @@ export default function Feed() {
         <>
             {/* Sticky Top Header */}
             <div className="sticky top-0 z-10 w-full bg-white/80 backdrop-blur-md border-b border-slate-100">
-                <h1 className="text-xl font-bold text-slate-900 px-4 py-3">主页</h1>
+                <h1 className="text-xl font-bold text-slate-900 px-4 py-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                    主页
+                </h1>
+                <div className="flex w-full border-b border-slate-100">
+                    <div className="flex flex-1 cursor-pointer items-center justify-center p-4 hover:bg-slate-100 transition relative">
+                        <span className="font-bold text-slate-900">推荐</span>
+                        <div className="absolute bottom-0 h-1 w-14 rounded-full bg-blue-500"></div>
+                    </div>
+                    <div className="flex flex-1 cursor-pointer items-center justify-center p-4 hover:bg-slate-100 transition text-slate-500">
+                        <span className="font-medium">关注</span>
+                    </div>
+                </div>
             </div>
 
             {/* Composer Section */}

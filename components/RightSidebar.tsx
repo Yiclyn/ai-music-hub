@@ -18,25 +18,28 @@ export default function RightSidebar() {
             </div>
 
             {/* Login / Auth Placeholder */}
-            <div className="rounded-2xl border border-slate-100 p-4 shadow-sm">
-                <h2 className="text-xl font-bold text-slate-900 mb-2">加入 AI Music Hub</h2>
+            <div className="rounded-2xl border border-slate-100 p-4 shadow-sm bg-white">
+                <h2 className="text-xl font-bold text-slate-900 mb-2">New to X?</h2>
                 <p className="text-sm text-slate-500 mb-4">
-                    分享你的 AI 音乐，发现更多有趣的声音。
+                    Sign up now to get your own personalized timeline!
                 </p>
-                <button className="w-full rounded-full bg-slate-900 px-4 py-2 font-bold text-white hover:bg-slate-800 transition">
-                    邮箱登录 / 注册
+                <button className="w-full rounded-full bg-slate-900 px-4 py-2 font-bold text-white hover:bg-slate-800 transition mb-3">
+                    Create account
                 </button>
+                <p className="text-xs text-slate-500">
+                    By signing up, you agree to the Terms of Service and Privacy Policy, including Cookie Use.
+                </p>
             </div>
 
             {/* Trending Placeholder */}
             <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 hidden lg:block">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">热门推荐</h2>
+                <h2 className="text-xl font-bold text-slate-900 mb-4">What's happening</h2>
                 <div className="space-y-4">
                     {[1, 2, 3].map((item) => (
                         <div key={item} className="flex cursor-pointer flex-col hover:bg-slate-100 p-2 -mx-2 rounded transition">
-                            <span className="text-xs text-slate-500">流行趋势 · 音乐领域</span>
-                            <span className="font-bold text-slate-900">#SunoAI</span>
-                            <span className="text-xs text-slate-500">12.5k 帖子</span>
+                            <span className="text-xs text-slate-500">Trending in Tech</span>
+                            <span className="font-bold text-slate-900">#AIRevolution</span>
+                            <span className="text-xs text-slate-500">54.2k posts</span>
                         </div>
                     ))}
                 </div>

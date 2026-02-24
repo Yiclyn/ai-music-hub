@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, Repeat2, Heart, Share, Play, Pause } from "lucide-react";
+import { MessageCircle, Repeat2, Heart, BarChart2, Share, Play, Pause } from "lucide-react";
 import type { Post } from "./Feed";
 import { useState, useRef, useEffect } from "react";
 
@@ -10,7 +10,8 @@ export default function PostCard({ post }: { post: Post }) {
     const audioRef = useRef<HTMLAudioElement>(null);
 
     // Toggle audio playback
-    const togglePlay = () => {
+    const togglePlay = (e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!audioRef.current) return;
         if (isPlaying) {
             audioRef.current.pause();
@@ -43,13 +44,13 @@ export default function PostCard({ post }: { post: Post }) {
         };
     }, []);
 
-    // Format date simply to avoid external deps
+    // Format date simply
     const formatDate = (dateString: string) => {
         try {
             const d = new Date(dateString);
             return `${d.getMonth() + 1}月${d.getDate()}日`;
         } catch {
-            return "刚刚";
+            return "Just now";
         }
     };
     const timeStr = formatDate(post.created_at);
@@ -63,42 +64,40 @@ export default function PostCard({ post }: { post: Post }) {
 
             <div className="flex w-full flex-col">
                 {/* Header */}
-                <div className="flex items-center text-sm md:text-base mb-1">
-                    <span className="font-bold text-slate-900 mr-1 hover:underline">
-                        {post.author_id.slice(0, 8)}
+                <div className="flex items-center text-[15px] mb-1">
+                    <span className="font-bold text-slate-900 mr-1 hover:underline truncate">
+                        {post.author_id}
                     </span>
-                    <span className="text-slate-500 mr-1">@{post.author_id.slice(0, 6)}</span>
+                    <span className="text-slate-500 mr-1 truncate">@{post.author_id}</span>
                     <span className="text-slate-500">· {timeStr}</span>
                 </div>
 
                 {/* Text Content */}
                 {post.description && (
-                    <p className="text-[15px] text-slate-900 mb-3 whitespace-pre-wrap">
+                    <p className="text-[15px] text-slate-900 mb-3 whitespace-pre-wrap leading-normal">
                         {post.description}
                     </p>
                 )}
 
                 {/* Media Player */}
                 {post.media_type === "audio" && (
-                    <div className="mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                        <div className="flex items-center gap-4">
+                    <div className="mb-3 w-full rounded-2xl border border-slate-200 bg-white p-3 hover:bg-slate-50 transition" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-3">
                             <button
                                 onClick={togglePlay}
-                                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-500 text-white shadow-md hover:bg-blue-600 transition"
+                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm hover:bg-blue-600 transition"
                             >
                                 {isPlaying ? (
-                                    <Pause className="h-5 w-5 fill-current" />
+                                    <Pause className="h-4 w-4 fill-current" />
                                 ) : (
-                                    <Play className="h-5 w-5 fill-current ml-1" />
+                                    <Play className="h-4 w-4 fill-current ml-0.5" />
                                 )}
                             </button>
-                            <div className="flex flex-col w-full min-w-0">
+                            <div className="flex flex-col w-full min-w-0 justify-center">
                                 <span className="text-sm font-bold text-slate-900 truncate">
-                                    {post.title || "Unknown Audio"}
+                                    {post.title || "Untitled Track"}
                                 </span>
-                                <span className="text-xs text-slate-500">Audio Preview</span>
-                                {/* Progress Bar */}
-                                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                                <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-200">
                                     <div
                                         className="h-full bg-blue-500 transition-all duration-100"
                                         style={{ width: `${progress}%` }}
@@ -111,39 +110,48 @@ export default function PostCard({ post }: { post: Post }) {
                 )}
 
                 {post.media_type === "video" && (
-                    <div className="mb-3 overflow-hidden rounded-2xl border border-slate-200">
+                    <div className="mb-3 overflow-hidden rounded-2xl border border-slate-200" onClick={(e) => e.stopPropagation()}>
                         <video
                             src={post.media_url}
                             controls
-                            className="w-full h-auto bg-black"
+                            className="w-full max-h-[400px] object-cover bg-black"
                             preload="metadata"
                         />
                     </div>
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex items-center justify-between text-slate-500 mt-1 pr-6">
+                <div className="flex items-center justify-between text-slate-500 mt-1 max-w-[425px]">
                     <button className="group flex items-center gap-2 hover:text-blue-500 transition">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-blue-50">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-blue-50 transition">
                             <MessageCircle className="h-[18px] w-[18px]" />
                         </div>
+                        <span className="text-xs group-hover:text-blue-500">0</span>
                     </button>
 
                     <button className="group flex items-center gap-2 hover:text-green-500 transition">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-green-50">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-green-50 transition">
                             <Repeat2 className="h-[18px] w-[18px]" />
                         </div>
+                        <span className="text-xs group-hover:text-green-500">0</span>
                     </button>
 
                     <button className="group flex items-center gap-2 hover:text-pink-500 transition">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-pink-50">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-pink-50 transition">
                             <Heart className="h-[18px] w-[18px]" />
                         </div>
-                        <span className="text-xs">0</span>
+                        <span className="text-xs group-hover:text-pink-500">0</span>
                     </button>
 
                     <button className="group flex items-center gap-2 hover:text-blue-500 transition">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-blue-50">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-blue-50 transition">
+                            <BarChart2 className="h-[18px] w-[18px]" />
+                        </div>
+                        <span className="text-xs group-hover:text-blue-500">0</span>
+                    </button>
+
+                    <button className="group flex items-center gap-2 hover:text-blue-500 transition">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full group-hover:bg-blue-50 transition">
                             <Share className="h-[18px] w-[18px]" />
                         </div>
                     </button>

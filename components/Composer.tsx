@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import MediaUpload from "./MediaUpload";
-import { Loader2 } from "lucide-react";
+import { Loader2, Smile, Calendar, MapPin, BarChart2 } from "lucide-react";
 
 export default function Composer() {
     const [content, setContent] = useState("");
@@ -11,7 +11,7 @@ export default function Composer() {
     const [mediaType, setMediaType] = useState<"audio" | "video" | null>(null);
     const [isUploadingMedia, setIsUploadingMedia] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [mediaFile, setMediaFile] = useState<File | null>(null); // Just for UI display before submission
+    const [mediaFile, setMediaFile] = useState<File | null>(null);
 
     const handleUploadSuccess = (url: string, type: "audio" | "video") => {
         setMediaUrl(url);
@@ -20,11 +20,7 @@ export default function Composer() {
 
     const handleSubmit = async () => {
         if (!content.trim() && !mediaUrl) return;
-        if (!mediaUrl || !mediaType) {
-            alert("请上传音频或视频！(Media is required)");
-            return;
-        }
-
+        
         setIsSubmitting(true);
 
         try {
@@ -35,7 +31,7 @@ export default function Composer() {
                     description: content,
                     media_url: mediaUrl,
                     media_type: mediaType,
-                    author_id: "user_test", // Since auth is not implemented yet
+                    author_id: "user_test",
                 },
             ]);
 
@@ -43,7 +39,6 @@ export default function Composer() {
                 throw error;
             }
 
-            // Reset on success
             setContent("");
             setMediaUrl(null);
             setMediaType(null);
@@ -58,7 +53,6 @@ export default function Composer() {
 
     return (
         <div className="flex border-b border-slate-100 p-4">
-            {/* Avatar */}
             <div className="mr-4 shrink-0">
                 <div className="h-10 w-10 rounded-full bg-slate-300"></div>
             </div>
@@ -67,35 +61,42 @@ export default function Composer() {
                 <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    placeholder="有什么新鲜事？上传音乐或视频分享吧！"
-                    className="w-full resize-none border-none bg-transparent text-lg text-slate-900 outline-none placeholder:text-slate-500"
-                    rows={3}
+                    placeholder="What is happening?!"
+                    className="w-full resize-none border-none bg-transparent text-xl text-slate-900 outline-none placeholder:text-slate-500"
+                    rows={2}
                     disabled={isSubmitting}
                 />
 
                 {mediaFile && (
-                    <div className="my-2 rounded-2xl border border-slate-100 p-3 bg-slate-50 relative">
-                        <span className="text-sm font-medium text-slate-700">
-                            {mediaType === "audio" ? "🎵 Audio" : "🎬 Video"}: {mediaFile.name}
-                        </span>
+                    <div className="relative mt-2 rounded-2xl overflow-hidden border border-slate-200">
+                         {mediaType === 'video' ? (
+                            <video src={mediaUrl || undefined} className="w-full max-h-[300px] object-cover bg-black" controls />
+                         ) : (
+                            <div className="flex items-center gap-3 p-4 bg-slate-50">
+                                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-500">
+                                    🎵
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="font-medium text-slate-900">{mediaFile.name}</span>
+                                    <span className="text-xs text-slate-500">Audio file</span>
+                                </div>
+                            </div>
+                         )}
+                        
                         {isUploadingMedia && (
-                            <span className="ml-2 text-xs text-blue-500 animate-pulse">
-                                上传中...
-                            </span>
+                            <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm">
+                                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                            </div>
                         )}
-                        {!isUploadingMedia && mediaUrl && (
-                            <span className="ml-2 text-xs text-green-500">
-                                上传完成
-                            </span>
-                        )}
-                        {!isUploadingMedia && mediaUrl && (
+                        
+                        {!isUploadingMedia && (
                             <button
                                 onClick={() => {
                                     setMediaUrl(null);
                                     setMediaType(null);
                                     setMediaFile(null);
                                 }}
-                                className="absolute top-2 right-2 text-slate-400 hover:text-slate-600"
+                                className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm transition"
                             >
                                 ✕
                             </button>
@@ -103,8 +104,8 @@ export default function Composer() {
                     </div>
                 )}
 
-                <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-3">
-                    <div className="flex items-center gap-2 text-blue-500">
+                <div className="mt-2 flex items-center justify-between pt-2">
+                    <div className="flex items-center gap-1 -ml-2 text-blue-400">
                         <MediaUpload
                             onUploadSuccess={handleUploadSuccess}
                             isUploading={isUploadingMedia}
@@ -112,14 +113,29 @@ export default function Composer() {
                             mediaFile={mediaFile}
                             setMediaFile={setMediaFile}
                         />
+                        <button className="rounded-full p-2 hover:bg-blue-50 transition" title="GIF">
+                            <span className="font-bold text-xs border border-current rounded px-0.5">GIF</span>
+                        </button>
+                        <button className="rounded-full p-2 hover:bg-blue-50 transition">
+                            <BarChart2 className="h-5 w-5 rotate-90" />
+                        </button>
+                        <button className="rounded-full p-2 hover:bg-blue-50 transition">
+                            <Smile className="h-5 w-5" />
+                        </button>
+                        <button className="rounded-full p-2 hover:bg-blue-50 transition">
+                            <Calendar className="h-5 w-5" />
+                        </button>
+                        <button className="rounded-full p-2 hover:bg-blue-50 transition disabled:opacity-50">
+                            <MapPin className="h-5 w-5" />
+                        </button>
                     </div>
 
                     <button
                         onClick={handleSubmit}
-                        disabled={(!content.trim() && !mediaUrl) || isUploadingMedia || isSubmitting || !mediaUrl}
+                        disabled={(!content.trim() && !mediaUrl) || isUploadingMedia || isSubmitting}
                         className="flex h-9 items-center justify-center rounded-full bg-blue-500 px-4 font-bold text-white transition hover:bg-blue-600 disabled:opacity-50"
                     >
-                        {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "发帖"}
+                        {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Post"}
                     </button>
                 </div>
             </div>
