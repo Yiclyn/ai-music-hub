@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Music, Video, Image as ImageIcon, X, Upload } from 'lucide-react'
 import Link from 'next/link'
 import { supabase, initializeStorage, testUpload } from '@/lib/supabase'
+import { useAuth } from '@/contexts/AuthContext'
 
 type MediaType = 'audio' | 'video' | 'image' | null
 
 export default function ComposeForm() {
   const router = useRouter()
+  const { user, profile } = useAuth()
   const [content, setContent] = useState('')
   const [mediaFile, setMediaFile] = useState<File | null>(null)
   const [mediaType, setMediaType] = useState<MediaType>(null)
@@ -21,6 +23,14 @@ export default function ComposeForm() {
   const videoInputRef = useRef<HTMLInputElement>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
 
+  // 检查登录状态
+  useEffect(() => {
+    if (!user) {
+      alert('请先登录后再发布内容')
+      router.push('/login')
+    }
+  }, [user, router])
+
   // 初始化存储
   useEffect(() => {
     const init = async () => {
@@ -28,7 +38,6 @@ export default function ComposeForm() {
       const success = await initializeStorage()
       if (success) {
         console.log('存储初始化成功')
-        // 测试上传功能
         const testSuccess = await testUpload()
         console.log('上传测试结果:', testSuccess ? '成功' : '失败')
       } else {
@@ -140,6 +149,11 @@ export default function ComposeForm() {
 
   const handlePost = async () => {
     if (!content.trim() && !mediaFile) return
+    if (!user || !profile) {
+      alert('请先登录')
+      router.push('/login')
+      return
+    }
 
     setIsPosting(true)
     try {
@@ -165,8 +179,10 @@ export default function ComposeForm() {
       // Create post data
       const postData = {
         content: content.trim(),
-        author_name: '音乐爱好者',
-        author_avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
+        user_id: user.id,
+        username: profile.username,
+        author_name: profile.nickname,
+        author_avatar: profile.avatar_url,
         likes_count: 0,
         media_url: mediaUrl,
         media_type: mediaType,
@@ -209,6 +225,10 @@ export default function ComposeForm() {
     }
   }
 
+  if (!user || !profile) {
+    return null
+  }
+
   return (
     <div className="flex-1 border-x border-slate-100 lg:border-x-0 lg:border-r mb-16 lg:mb-0">
       {/* Header */}
@@ -225,9 +245,9 @@ export default function ComposeForm() {
       <div className="p-4">
         <div className="flex space-x-3">
           <img 
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
-            alt="Your avatar"
-            className="w-10 h-10 rounded-full"
+            src={profile.avatar_url}
+            alt={profile.nickname}
+            className="w-10 h-10 rounded-full object-cover"
           />
           <div className="flex-1">
             <textarea

@@ -1,50 +1,48 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/contexts/AuthContext'
+import Link from 'next/link'
 
 export default function RightPanel() {
-  const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    getUser()
-  }, [])
+  const { user, profile, signOut } = useAuth()
 
   return (
     <div className="w-[350px] h-screen sticky top-0 p-4 hidden lg:block">
       <div className="space-y-4">
         {/* User Card */}
-        {user ? (
+        {user && profile ? (
           <div className="bg-slate-50 rounded-2xl p-4">
             <div className="flex items-center space-x-3">
               <img 
-                src={`https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face`}
-                alt="Avatar"
-                className="w-10 h-10 rounded-full"
+                src={profile.avatar_url}
+                alt={profile.nickname}
+                className="w-12 h-12 rounded-full object-cover"
               />
-              <div>
-                <div className="font-semibold text-primary">音乐爱好者</div>
-                <div className="text-sm text-secondary">@musiclover</div>
+              <div className="flex-1">
+                <div className="font-semibold text-primary">{profile.nickname}</div>
+                <div className="text-sm text-secondary">@{profile.username}</div>
               </div>
             </div>
             <div className="mt-4 flex justify-between text-sm">
               <div>
-                <div className="font-semibold">128</div>
+                <div className="font-semibold">0</div>
                 <div className="text-secondary">关注</div>
               </div>
               <div>
-                <div className="font-semibold">1.2K</div>
+                <div className="font-semibold">0</div>
                 <div className="text-secondary">粉丝</div>
               </div>
               <div>
-                <div className="font-semibold">89</div>
+                <div className="font-semibold">0</div>
                 <div className="text-secondary">作品</div>
               </div>
             </div>
+            <button
+              onClick={() => signOut()}
+              className="w-full mt-4 border border-slate-300 rounded-full py-2 text-sm font-semibold hover:bg-slate-100 transition-colors"
+            >
+              退出登录
+            </button>
           </div>
         ) : (
           <div className="bg-slate-50 rounded-2xl p-4">
@@ -53,12 +51,16 @@ export default function RightPanel() {
               发现最新音乐，分享你的创作
             </p>
             <div className="space-y-2">
-              <button className="w-full bg-primary text-white rounded-full py-2 font-semibold hover:bg-primary/90 transition-colors">
-                注册
-              </button>
-              <button className="w-full border border-slate-300 rounded-full py-2 font-semibold hover:bg-slate-50 transition-colors">
-                登录
-              </button>
+              <Link href="/register" className="block">
+                <button className="w-full bg-primary text-white rounded-full py-2 font-semibold hover:bg-primary/90 transition-colors">
+                  注册
+                </button>
+              </Link>
+              <Link href="/login" className="block">
+                <button className="w-full border border-slate-300 rounded-full py-2 font-semibold hover:bg-slate-50 transition-colors">
+                  登录
+                </button>
+              </Link>
             </div>
           </div>
         )}

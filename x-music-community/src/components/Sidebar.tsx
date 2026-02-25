@@ -2,8 +2,22 @@
 
 import { Home, Search, User, Plus } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function Sidebar() {
+  const router = useRouter()
+  const { user } = useAuth()
+
+  const handlePostClick = () => {
+    if (!user) {
+      alert('请先登录后再发布内容')
+      router.push('/login')
+    } else {
+      router.push('/compose')
+    }
+  }
+
   return (
     <div className="w-[275px] h-screen sticky top-0 p-4 border-r border-slate-100">
       <div className="flex flex-col space-y-8">
@@ -31,12 +45,13 @@ export default function Sidebar() {
         </nav>
         
         {/* Post Button */}
-        <Link href="/compose" className="block">
-          <button className="w-full bg-primary text-white rounded-full py-3 px-8 font-semibold hover:bg-primary/90 transition-colors">
-            <Plus size={20} className="inline mr-2" />
-            发布
-          </button>
-        </Link>
+        <button
+          onClick={handlePostClick}
+          className="w-full bg-primary text-white rounded-full py-3 px-8 font-semibold hover:bg-primary/90 transition-colors"
+        >
+          <Plus size={20} className="inline mr-2" />
+          发布
+        </button>
       </div>
     </div>
   )
