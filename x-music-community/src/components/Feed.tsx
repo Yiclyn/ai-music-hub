@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { supabase, Post } from '@/lib/supabase'
-import PostComposer from './PostComposer'
 import PostCard from './PostCard'
 
 export default function Feed() {
@@ -53,7 +52,7 @@ export default function Feed() {
   if (loading) {
     return (
       <div className="flex-1 border-x border-slate-100 lg:border-x-0 lg:border-r">
-        <div className="p-8 text-center text-text-secondary">
+        <div className="p-8 text-center text-secondary">
           加载中...
         </div>
       </div>
@@ -63,10 +62,8 @@ export default function Feed() {
   return (
     <div className="flex-1 border-x border-slate-100 lg:border-x-0 lg:border-r mb-16 lg:mb-0">
       <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-100 p-4">
-        <h1 className="text-xl font-bold text-text-primary">首页</h1>
+        <h1 className="text-xl font-bold text-primary">首页</h1>
       </div>
-      
-      <PostComposer />
       
       <div>
         {posts.map((post) => (

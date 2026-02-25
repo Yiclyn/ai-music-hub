@@ -10,10 +10,10 @@ const config: Config = {
     extend: {
       colors: {
         primary: "#8a2be2", // Electric purple
-        text: {
-          primary: "#0F1419",
-          secondary: "#536471",
-        },
+      },
+      textColor: {
+        'primary': "#0F1419",
+        'secondary': "#536471",
       },
       maxWidth: {
         'main': '1265px',

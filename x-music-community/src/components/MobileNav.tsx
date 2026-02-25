@@ -17,12 +17,12 @@ export default function MobileNav() {
           <span className="text-xs mt-1">探索</span>
         </Link>
         
-        <button className="flex flex-col items-center p-2">
+        <Link href="/compose" className="flex flex-col items-center p-2">
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
             <Plus size={20} className="text-white" />
           </div>
           <span className="text-xs mt-1">发布</span>
-        </button>
+        </Link>
         
         <Link href="/profile" className="flex flex-col items-center p-2">
           <User size={24} />

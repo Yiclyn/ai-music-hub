@@ -38,12 +38,12 @@ export default function PostCard({ post }: PostCardProps) {
         
         <div className="flex-1">
           <div className="flex items-center space-x-2">
-            <span className="font-semibold text-text-primary">{post.author_name}</span>
-            <span className="text-text-secondary">·</span>
-            <span className="text-text-secondary text-sm">{formatDate(post.created_at)}</span>
+            <span className="font-semibold text-primary">{post.author_name}</span>
+            <span className="text-secondary">·</span>
+            <span className="text-secondary text-sm">{formatDate(post.created_at)}</span>
           </div>
           
-          <div className="mt-2 text-text-primary">
+          <div className="mt-2 text-primary">
             {post.content}
           </div>
           
@@ -69,7 +69,7 @@ export default function PostCard({ post }: PostCardProps) {
                           <div className="w-1/3 h-full bg-primary rounded-full"></div>
                         </div>
                       </div>
-                      <div className="text-sm text-text-secondary mt-1">0:45 / 2:30</div>
+                      <div className="text-sm text-secondary mt-1">0:45 / 2:30</div>
                     </div>
                   </div>
                 </div>
@@ -102,12 +102,12 @@ export default function PostCard({ post }: PostCardProps) {
           
           {/* Actions */}
           <div className="flex items-center justify-between mt-4 max-w-md">
-            <button className="flex items-center space-x-2 text-text-secondary hover:text-blue-500 transition-colors">
+            <button className="flex items-center space-x-2 text-secondary hover:text-blue-500 transition-colors">
               <MessageCircle size={18} />
               <span className="text-sm">12</span>
             </button>
             
-            <button className="flex items-center space-x-2 text-text-secondary hover:text-green-500 transition-colors">
+            <button className="flex items-center space-x-2 text-secondary hover:text-green-500 transition-colors">
               <Repeat2 size={18} />
               <span className="text-sm">5</span>
             </button>
@@ -115,14 +115,14 @@ export default function PostCard({ post }: PostCardProps) {
             <button 
               onClick={handleLike}
               className={`flex items-center space-x-2 transition-colors ${
-                isLiked ? 'text-red-500' : 'text-text-secondary hover:text-red-500'
+                isLiked ? 'text-red-500' : 'text-secondary hover:text-red-500'
               }`}
             >
               <Heart size={18} className={isLiked ? 'fill-current' : ''} />
               <span className="text-sm">{likesCount}</span>
             </button>
             
-            <button className="flex items-center space-x-2 text-text-secondary hover:text-primary transition-colors">
+            <button className="flex items-center space-x-2 text-secondary hover:text-primary transition-colors">
               <Share size={18} />
             </button>
           </div>

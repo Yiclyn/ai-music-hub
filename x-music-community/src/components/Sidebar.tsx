@@ -31,10 +31,12 @@ export default function Sidebar() {
         </nav>
         
         {/* Post Button */}
-        <button className="bg-primary text-white rounded-full py-3 px-8 font-semibold hover:bg-primary/90 transition-colors">
-          <Plus size={20} className="inline mr-2" />
-          发布
-        </button>
+        <Link href="/compose" className="block">
+          <button className="w-full bg-primary text-white rounded-full py-3 px-8 font-semibold hover:bg-primary/90 transition-colors">
+            <Plus size={20} className="inline mr-2" />
+            发布
+          </button>
+        </Link>
       </div>
     </div>
   )

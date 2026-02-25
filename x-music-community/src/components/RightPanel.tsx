@@ -27,29 +27,29 @@ export default function RightPanel() {
                 className="w-10 h-10 rounded-full"
               />
               <div>
-                <div className="font-semibold text-text-primary">音乐爱好者</div>
-                <div className="text-sm text-text-secondary">@musiclover</div>
+                <div className="font-semibold text-primary">音乐爱好者</div>
+                <div className="text-sm text-secondary">@musiclover</div>
               </div>
             </div>
             <div className="mt-4 flex justify-between text-sm">
               <div>
                 <div className="font-semibold">128</div>
-                <div className="text-text-secondary">关注</div>
+                <div className="text-secondary">关注</div>
               </div>
               <div>
                 <div className="font-semibold">1.2K</div>
-                <div className="text-text-secondary">粉丝</div>
+                <div className="text-secondary">粉丝</div>
               </div>
               <div>
                 <div className="font-semibold">89</div>
-                <div className="text-text-secondary">作品</div>
+                <div className="text-secondary">作品</div>
               </div>
             </div>
           </div>
         ) : (
           <div className="bg-slate-50 rounded-2xl p-4">
             <h3 className="font-bold text-lg mb-2">加入音乐社区</h3>
-            <p className="text-text-secondary text-sm mb-4">
+            <p className="text-secondary text-sm mb-4">
               发现最新音乐，分享你的创作
             </p>
             <div className="space-y-2">
@@ -68,19 +68,19 @@ export default function RightPanel() {
           <h3 className="font-bold text-lg mb-4">热门话题</h3>
           <div className="space-y-3">
             <div className="hover:bg-slate-100 p-2 rounded cursor-pointer">
-              <div className="text-sm text-text-secondary">音乐 · 热门</div>
+              <div className="text-sm text-secondary">音乐 · 热门</div>
               <div className="font-semibold">#AI音乐创作</div>
-              <div className="text-sm text-text-secondary">12.5K 讨论</div>
+              <div className="text-sm text-secondary">12.5K 讨论</div>
             </div>
             <div className="hover:bg-slate-100 p-2 rounded cursor-pointer">
-              <div className="text-sm text-text-secondary">流行 · 趋势</div>
+              <div className="text-sm text-secondary">流行 · 趋势</div>
               <div className="font-semibold">#电子音乐</div>
-              <div className="text-sm text-text-secondary">8.9K 讨论</div>
+              <div className="text-sm text-secondary">8.9K 讨论</div>
             </div>
             <div className="hover:bg-slate-100 p-2 rounded cursor-pointer">
-              <div className="text-sm text-text-secondary">创作 · 热门</div>
+              <div className="text-sm text-secondary">创作 · 热门</div>
               <div className="font-semibold">#独立音乐人</div>
-              <div className="text-sm text-text-secondary">5.2K 讨论</div>
+              <div className="text-sm text-secondary">5.2K 讨论</div>
             </div>
           </div>
         </div>
