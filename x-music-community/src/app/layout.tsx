@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AudioProvider } from "@/contexts/AudioContext";
 
 export const metadata: Metadata = {
   title: "MusicX - AI音乐社区",
@@ -16,7 +17,9 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className="antialiased bg-white text-primary">
         <AuthProvider>
-          {children}
+          <AudioProvider>
+            {children}
+          </AudioProvider>
         </AuthProvider>
       </body>
     </html>
