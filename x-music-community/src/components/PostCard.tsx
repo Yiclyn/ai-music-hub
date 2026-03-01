@@ -1,17 +1,35 @@
 'use client'
 
-import { Heart, MessageCircle, Repeat2, Share, Play, Pause, Volume2 } from 'lucide-react'
-import { Post } from '@/lib/supabase'
+import { Heart, MessageCircle, Repeat2, Share, Play, Pause, Volume2, Send, X } from 'lucide-react'
+import { Post, Comment, supabase } from '@/lib/supabase'
 import { useState, useRef, useEffect } from 'react'
 import { useAudio } from '@/contexts/AudioContext'
+import { useAuth } from '@/contexts/AuthContext'
+import AvatarUpload from './AvatarUpload'
+import FollowButton from './FollowButton'
 
 interface PostCardProps {
   post: Post
 }
 
 export default function PostCard({ post }: PostCardProps) {
+  const { user } = useAuth()
   const [isLiked, setIsLiked] = useState(false)
   const [likesCount, setLikesCount] = useState(post.likes_count)
+  const [commentsCount, setCommentsCount] = useState(post.comments_count)
+  const [retweetsCount, setRetweetsCount] = useState(post.retweets_count)
+  const [isRetweeted, setIsRetweeted] = useState(false)
+  
+  // 评论相关状态
+  const [showComments, setShowComments] = useState(false)
+  const [comments, setComments] = useState<Comment[]>([])
+  const [newComment, setNewComment] = useState('')
+  const [loadingComments, setLoadingComments] = useState(false)
+  
+  // 转发相关状态
+  const [showRetweetDialog, setShowRetweetDialog] = useState(false)
+  const [retweetComment, setRetweetComment] = useState('')
+  
   const { currentlyPlaying, setCurrentlyPlaying } = useAudio()
   
   // 音频播放状态
@@ -24,9 +42,171 @@ export default function PostCard({ post }: PostCardProps) {
 
   const isPlaying = currentlyPlaying === post.id
 
-  const handleLike = () => {
-    setIsLiked(!isLiked)
-    setLikesCount(prev => isLiked ? prev - 1 : prev + 1)
+  // 检查用户是否已点赞
+  useEffect(() => {
+    if (user) {
+      checkIfLiked()
+      checkIfRetweeted()
+    }
+  }, [user, post.id])
+
+  const checkIfLiked = async () => {
+    if (!user) return
+    
+    const { data } = await supabase
+      .from('post_likes')
+      .select('id')
+      .eq('post_id', post.id)
+      .eq('user_id', user.id)
+      .single()
+    
+    setIsLiked(!!data)
+  }
+
+  const checkIfRetweeted = async () => {
+    if (!user) return
+    
+    const { data } = await supabase
+      .from('retweets')
+      .select('id')
+      .eq('post_id', post.id)
+      .eq('user_id', user.id)
+      .single()
+    
+    setIsRetweeted(!!data)
+  }
+
+  const handleLike = async () => {
+    if (!user) {
+      alert('请先登录')
+      return
+    }
+
+    try {
+      if (isLiked) {
+        // 取消点赞
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', post.id)
+          .eq('user_id', user.id)
+        
+        setIsLiked(false)
+        setLikesCount(prev => prev - 1)
+      } else {
+        // 点赞
+        await supabase
+          .from('post_likes')
+          .insert({ post_id: post.id, user_id: user.id })
+        
+        setIsLiked(true)
+        setLikesCount(prev => prev + 1)
+      }
+    } catch (error) {
+      console.error('点赞操作失败:', error)
+    }
+  }
+
+  const loadComments = async () => {
+    setLoadingComments(true)
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .select(`
+          *,
+          user:profiles(username, full_name, avatar_url)
+        `)
+        .eq('post_id', post.id)
+        .order('created_at', { ascending: false })
+      
+      if (error) throw error
+      setComments(data || [])
+    } catch (error) {
+      console.error('加载评论失败:', error)
+    } finally {
+      setLoadingComments(false)
+    }
+  }
+
+  const handleCommentClick = () => {
+    setShowComments(!showComments)
+    if (!showComments) {
+      loadComments()
+    }
+  }
+
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user || !newComment.trim()) return
+
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .insert({
+          post_id: post.id,
+          user_id: user.id,
+          content: newComment.trim()
+        })
+      
+      if (error) throw error
+      
+      setNewComment('')
+      setCommentsCount(prev => prev + 1)
+      loadComments()
+    } catch (error) {
+      console.error('发表评论失败:', error)
+      alert('发表评论失败')
+    }
+  }
+
+  const handleRetweet = async () => {
+    if (!user) {
+      alert('请先登录')
+      return
+    }
+
+    if (isRetweeted) {
+      // 取消转发
+      try {
+        await supabase
+          .from('retweets')
+          .delete()
+          .eq('post_id', post.id)
+          .eq('user_id', user.id)
+        
+        setIsRetweeted(false)
+        setRetweetsCount(prev => prev - 1)
+      } catch (error) {
+        console.error('取消转发失败:', error)
+      }
+    } else {
+      // 显示转发对话框
+      setShowRetweetDialog(true)
+    }
+  }
+
+  const handleConfirmRetweet = async () => {
+    if (!user) return
+
+    try {
+      const { error } = await supabase
+        .from('retweets')
+        .insert({
+          post_id: post.id,
+          user_id: user.id,
+          comment: retweetComment.trim() || null
+        })
+      
+      if (error) throw error
+      
+      setIsRetweeted(true)
+      setRetweetsCount(prev => prev + 1)
+      setShowRetweetDialog(false)
+      setRetweetComment('')
+    } catch (error) {
+      console.error('转发失败:', error)
+      alert('转发失败')
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -143,17 +323,22 @@ export default function PostCard({ post }: PostCardProps) {
   return (
     <div className="border-b border-slate-100 p-4 hover:bg-slate-50/50 transition-colors">
       <div className="flex space-x-3">
-        <img 
-          src={post.author_avatar}
-          alt={post.author_name}
-          className="w-10 h-10 rounded-full object-cover"
+        <AvatarUpload 
+          currentAvatar={post.author_avatar}
+          size="md"
+          editable={false}
         />
         
         <div className="flex-1">
-          <div className="flex items-center space-x-2">
-            <span className="font-semibold text-primary">{post.author_name}</span>
-            <span className="text-secondary">·</span>
-            <span className="text-secondary text-sm">{formatDate(post.created_at)}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="font-semibold text-primary">{post.author_name}</span>
+              <span className="text-secondary">·</span>
+              <span className="text-secondary text-sm">{formatDate(post.created_at)}</span>
+            </div>
+            {user && user.id !== post.user_id && (
+              <FollowButton userId={post.user_id} size="sm" />
+            )}
           </div>
           
           <div className="mt-2 text-primary">
@@ -259,14 +444,22 @@ export default function PostCard({ post }: PostCardProps) {
           
           {/* Actions */}
           <div className="flex items-center justify-between mt-4 max-w-md">
-            <button className="flex items-center space-x-2 text-secondary hover:text-blue-500 transition-colors">
+            <button 
+              onClick={handleCommentClick}
+              className="flex items-center space-x-2 text-secondary hover:text-blue-500 transition-colors"
+            >
               <MessageCircle size={18} />
-              <span className="text-sm">12</span>
+              <span className="text-sm">{commentsCount}</span>
             </button>
             
-            <button className="flex items-center space-x-2 text-secondary hover:text-green-500 transition-colors">
+            <button 
+              onClick={handleRetweet}
+              className={`flex items-center space-x-2 transition-colors ${
+                isRetweeted ? 'text-green-500' : 'text-secondary hover:text-green-500'
+              }`}
+            >
               <Repeat2 size={18} />
-              <span className="text-sm">5</span>
+              <span className="text-sm">{retweetsCount}</span>
             </button>
             
             <button 
@@ -283,8 +476,101 @@ export default function PostCard({ post }: PostCardProps) {
               <Share size={18} />
             </button>
           </div>
+
+          {/* 评论区 */}
+          {showComments && (
+            <div className="mt-4 border-t border-slate-100 pt-4">
+              {/* 评论输入框 */}
+              {user && (
+                <form onSubmit={handleSubmitComment} className="mb-4">
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="发表评论..."
+                      className="flex-1 px-4 py-2 border border-slate-200 rounded-full focus:outline-none focus:border-primary"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!newComment.trim()}
+                      className="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Send size={18} />
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* 评论列表 */}
+              <div className="space-y-3">
+                {loadingComments ? (
+                  <div className="text-center text-secondary py-4">加载中...</div>
+                ) : comments.length === 0 ? (
+                  <div className="text-center text-secondary py-4">暂无评论</div>
+                ) : (
+                  comments.map((comment) => (
+                    <div key={comment.id} className="flex space-x-2">
+                      <AvatarUpload
+                        currentAvatar={comment.user?.avatar_url}
+                        size="sm"
+                        editable={false}
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold text-sm">{comment.user?.full_name}</span>
+                          <span className="text-xs text-secondary">{formatDate(comment.created_at)}</span>
+                        </div>
+                        <div className="text-sm text-primary mt-1">{comment.content}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* 转发对话框 */}
+      {showRetweetDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">转发帖子</h3>
+              <button
+                onClick={() => setShowRetweetDialog(false)}
+                className="text-secondary hover:text-primary"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <textarea
+              value={retweetComment}
+              onChange={(e) => setRetweetComment(e.target.value)}
+              placeholder="添加评论（可选）..."
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-primary resize-none"
+              rows={3}
+            />
+            
+            <div className="flex space-x-3 mt-4">
+              <button
+                onClick={() => setShowRetweetDialog(false)}
+                className="flex-1 px-4 py-2 border border-slate-200 rounded-full hover:bg-slate-50"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleConfirmRetweet}
+                className="flex-1 px-4 py-2 bg-primary text-white rounded-full hover:bg-primary/90"
+              >
+                转发
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

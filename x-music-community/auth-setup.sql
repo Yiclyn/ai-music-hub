@@ -2,7 +2,7 @@
 -- 在 Supabase SQL Editor 中执行此脚本
 
 -- 1. 创建 profiles 表（用户资料）
-CREATE TABLE IF NOT EXISTS public.profiles (
+CREATE TABLE IF  NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   username VARCHAR(50) UNIQUE NOT NULL,
   nickname VARCHAR(100) NOT NULL,

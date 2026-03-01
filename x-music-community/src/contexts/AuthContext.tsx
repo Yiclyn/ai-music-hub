@@ -10,6 +10,9 @@ interface Profile {
   nickname: string
   avatar_url: string
   bio?: string
+  posts_count: number
+  following_count: number
+  followers_count: number
 }
 
 interface AuthContextType {
@@ -20,6 +23,10 @@ interface AuthContextType {
   signUp: (email: string, password: string, username: string, nickname: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: Error | null }>
+  uploadAvatar: (file: File) => Promise<{ error: Error | null }>
+  followUser: (userId: string) => Promise<{ error: Error | null }>
+  unfollowUser: (userId: string) => Promise<{ error: Error | null }>
+  isFollowing: (userId: string) => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -114,6 +121,105 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error }
   }
 
+  const uploadAvatar = async (file: File) => {
+    if (!user) return { error: new Error('Not authenticated') }
+
+    try {
+      // 检查文件类型
+      if (!file.type.startsWith('image/')) {
+        return { error: new Error('请选择图片文件') }
+      }
+
+      // 检查文件大小 (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        return { error: new Error('图片大小不能超过 5MB') }
+      }
+
+      const fileExt = file.name.split('.').pop()
+      const fileName = `avatar-${user.id}-${Date.now()}.${fileExt}`
+      const filePath = `avatars/${fileName}`
+
+      // 上传到 Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('media')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        })
+
+      if (uploadError) {
+        return { error: uploadError }
+      }
+
+      // 获取公共URL
+      const { data: urlData } = supabase.storage
+        .from('media')
+        .getPublicUrl(filePath)
+
+      // 更新用户资料
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: urlData.publicUrl })
+        .eq('id', user.id)
+
+      if (updateError) {
+        return { error: updateError }
+      }
+
+      // 更新本地状态
+      setProfile(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : null)
+
+      return { error: null }
+    } catch (error) {
+      return { error: error as Error }
+    }
+  }
+
+  const followUser = async (userId: string) => {
+    if (!user) return { error: new Error('Not authenticated') }
+
+    const { error } = await supabase
+      .from('follows')
+      .insert([{ follower_id: user.id, following_id: userId }])
+
+    if (!error) {
+      // 刷新用户资料以更新统计
+      await fetchProfile(user.id)
+    }
+
+    return { error }
+  }
+
+  const unfollowUser = async (userId: string) => {
+    if (!user) return { error: new Error('Not authenticated') }
+
+    const { error } = await supabase
+      .from('follows')
+      .delete()
+      .eq('follower_id', user.id)
+      .eq('following_id', userId)
+
+    if (!error) {
+      // 刷新用户资料以更新统计
+      await fetchProfile(user.id)
+    }
+
+    return { error }
+  }
+
+  const isFollowing = async (userId: string): Promise<boolean> => {
+    if (!user) return false
+
+    const { data, error } = await supabase
+      .from('follows')
+      .select('id')
+      .eq('follower_id', user.id)
+      .eq('following_id', userId)
+      .single()
+
+    return !error && !!data
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -123,6 +229,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signOut,
       updateProfile,
+      uploadAvatar,
+      followUser,
+      unfollowUser,
+      isFollowing,
     }}>
       {children}
     </AuthContext.Provider>

@@ -8,13 +8,57 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 export type Post = {
   id: string
   content: string
+  user_id: string
+  username: string
   author_name: string
   author_avatar: string
   created_at: string
   likes_count: number
+  comments_count: number
+  retweets_count: number
   media_url?: string
   media_type?: 'audio' | 'video' | 'image'
   cover_image?: string
+}
+
+export type Profile = {
+  id: string
+  username: string
+  full_name: string
+  avatar_url?: string
+  bio?: string
+  posts_count: number
+  following_count: number
+  followers_count: number
+  created_at: string
+}
+
+export type Comment = {
+  id: string
+  post_id: string
+  user_id: string
+  content: string
+  created_at: string
+  user?: {
+    username: string
+    full_name: string
+    avatar_url?: string
+  }
+}
+
+export type PostLike = {
+  id: string
+  post_id: string
+  user_id: string
+  created_at: string
+}
+
+export type Retweet = {
+  id: string
+  post_id: string
+  user_id: string
+  comment?: string
+  created_at: string
 }
 
 // 初始化存储桶
