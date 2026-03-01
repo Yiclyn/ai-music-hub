@@ -44,37 +44,35 @@ export default function PostCard({ post }: PostCardProps) {
 
   // 检查用户是否已点赞
   useEffect(() => {
-    if (user) {
-      checkIfLiked()
-      checkIfRetweeted()
+    const checkIfLiked = async () => {
+      if (!user) return
+      
+      const { data } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', post.id)
+        .eq('user_id', user.id)
+        .single()
+      
+      setIsLiked(!!data)
     }
+
+    const checkIfRetweeted = async () => {
+      if (!user) return
+      
+      const { data } = await supabase
+        .from('retweets')
+        .select('id')
+        .eq('post_id', post.id)
+        .eq('user_id', user.id)
+        .single()
+      
+      setIsRetweeted(!!data)
+    }
+
+    checkIfLiked()
+    checkIfRetweeted()
   }, [user, post.id])
-
-  const checkIfLiked = async () => {
-    if (!user) return
-    
-    const { data } = await supabase
-      .from('post_likes')
-      .select('id')
-      .eq('post_id', post.id)
-      .eq('user_id', user.id)
-      .single()
-    
-    setIsLiked(!!data)
-  }
-
-  const checkIfRetweeted = async () => {
-    if (!user) return
-    
-    const { data } = await supabase
-      .from('retweets')
-      .select('id')
-      .eq('post_id', post.id)
-      .eq('user_id', user.id)
-      .single()
-    
-    setIsRetweeted(!!data)
-  }
 
   const handleLike = async () => {
     if (!user) {
@@ -238,31 +236,6 @@ export default function PostCard({ post }: PostCardProps) {
     }
   }
 
-  const handleAudioTimeUpdate = () => {
-    if (!audioRef.current) return
-    setCurrentTime(audioRef.current.currentTime)
-  }
-
-  const handleAudioLoadedMetadata = () => {
-    if (!audioRef.current) return
-    setDuration(audioRef.current.duration)
-  }
-
-  const handleAudioEnded = () => {
-    setCurrentlyPlaying(null)
-    setCurrentTime(0)
-  }
-
-  const handleAudioPause = () => {
-    if (currentlyPlaying === post.id) {
-      setCurrentlyPlaying(null)
-    }
-  }
-
-  const handleAudioPlay = () => {
-    setCurrentlyPlaying(post.id)
-  }
-
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!audioRef.current) return
     
@@ -296,22 +269,45 @@ export default function PostCard({ post }: PostCardProps) {
 
   useEffect(() => {
     const audio = audioRef.current
-    if (audio) {
-      audio.addEventListener('timeupdate', handleAudioTimeUpdate)
-      audio.addEventListener('loadedmetadata', handleAudioLoadedMetadata)
-      audio.addEventListener('ended', handleAudioEnded)
-      audio.addEventListener('pause', handleAudioPause)
-      audio.addEventListener('play', handleAudioPlay)
-      
-      return () => {
-        audio.removeEventListener('timeupdate', handleAudioTimeUpdate)
-        audio.removeEventListener('loadedmetadata', handleAudioLoadedMetadata)
-        audio.removeEventListener('ended', handleAudioEnded)
-        audio.removeEventListener('pause', handleAudioPause)
-        audio.removeEventListener('play', handleAudioPlay)
+    if (!audio) return
+
+    const handleAudioTimeUpdate = () => {
+      setCurrentTime(audio.currentTime)
+    }
+
+    const handleAudioLoadedMetadata = () => {
+      setDuration(audio.duration)
+    }
+
+    const handleAudioEnded = () => {
+      setCurrentlyPlaying(null)
+      setCurrentTime(0)
+    }
+
+    const handleAudioPause = () => {
+      if (currentlyPlaying === post.id) {
+        setCurrentlyPlaying(null)
       }
     }
-  }, [])
+
+    const handleAudioPlay = () => {
+      setCurrentlyPlaying(post.id)
+    }
+
+    audio.addEventListener('timeupdate', handleAudioTimeUpdate)
+    audio.addEventListener('loadedmetadata', handleAudioLoadedMetadata)
+    audio.addEventListener('ended', handleAudioEnded)
+    audio.addEventListener('pause', handleAudioPause)
+    audio.addEventListener('play', handleAudioPlay)
+    
+    return () => {
+      audio.removeEventListener('timeupdate', handleAudioTimeUpdate)
+      audio.removeEventListener('loadedmetadata', handleAudioLoadedMetadata)
+      audio.removeEventListener('ended', handleAudioEnded)
+      audio.removeEventListener('pause', handleAudioPause)
+      audio.removeEventListener('play', handleAudioPlay)
+    }
+  }, [currentlyPlaying, post.id, setCurrentlyPlaying])
 
   // 当其他音频开始播放时，暂停当前音频
   useEffect(() => {
@@ -512,7 +508,7 @@ export default function PostCard({ post }: PostCardProps) {
                   comments.map((comment) => (
                     <div key={comment.id} className="flex space-x-2">
                       <AvatarUpload
-                        currentAvatar={comment.user?.avatar_url}
+                        currentAvatar={comment.user?.avatar_url || ''}
                         size="sm"
                         editable={false}
                       />
