@@ -8,11 +8,11 @@ interface Profile {
   id: string
   username: string
   nickname: string
-  avatar_url: string
+  avatar_url?: string
   bio?: string
-  posts_count: number
-  following_count: number
-  followers_count: number
+  posts_count?: number
+  following_count?: number
+  followers_count?: number
 }
 
 interface AuthContextType {

@@ -15,7 +15,7 @@ export default function RightPanel() {
           <div className="bg-slate-50 rounded-2xl p-4">
             <div className="flex items-center space-x-3">
               <AvatarUpload 
-                currentAvatar={profile.avatar_url}
+                currentAvatar={profile.avatar_url || ''}
                 size="lg"
                 editable={true}
               />
@@ -26,15 +26,15 @@ export default function RightPanel() {
             </div>
             <div className="mt-4 flex justify-between text-sm">
               <div>
-                <div className="font-semibold">{profile.following_count}</div>
+                <div className="font-semibold">{profile.following_count || 0}</div>
                 <div className="text-secondary">关注</div>
               </div>
               <div>
-                <div className="font-semibold">{profile.followers_count}</div>
+                <div className="font-semibold">{profile.followers_count || 0}</div>
                 <div className="text-secondary">粉丝</div>
               </div>
               <div>
-                <div className="font-semibold">{profile.posts_count}</div>
+                <div className="font-semibold">{profile.posts_count || 0}</div>
                 <div className="text-secondary">作品</div>
               </div>
             </div>
