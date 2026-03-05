@@ -108,19 +108,57 @@ export default function PostCard({ post }: PostCardProps) {
   const loadComments = async () => {
     setLoadingComments(true)
     try {
-      const { data, error } = await supabase
+      // 先获取评论
+      const { data: commentsData, error: commentsError } = await supabase
         .from('comments')
-        .select(`
-          *,
-          user:profiles(username, full_name, avatar_url)
-        `)
+        .select('*')
         .eq('post_id', post.id)
         .order('created_at', { ascending: false })
       
-      if (error) throw error
-      setComments(data || [])
+      if (commentsError) {
+        console.error('加载评论错误:', commentsError)
+        setComments([])
+        return
+      }
+
+      if (!commentsData || commentsData.length === 0) {
+        setComments([])
+        return
+      }
+
+      // 获取所有评论者的用户信息
+      const userIds = Array.from(new Set(commentsData.map(c => c.user_id)))
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username, nickname, avatar_url')
+        .in('id', userIds)
+
+      if (profilesError) {
+        console.error('加载用户信息错误:', profilesError)
+      }
+
+      // 合并数据
+      const profilesMap = new Map(
+        (profilesData || []).map(p => [p.id, p])
+      )
+
+      const formattedComments = commentsData.map(comment => ({
+        id: comment.id,
+        post_id: comment.post_id,
+        user_id: comment.user_id,
+        content: comment.content,
+        created_at: comment.created_at,
+        user: profilesMap.get(comment.user_id) ? {
+          username: profilesMap.get(comment.user_id)!.username,
+          nickname: profilesMap.get(comment.user_id)!.nickname,
+          avatar_url: profilesMap.get(comment.user_id)!.avatar_url
+        } : undefined
+      }))
+
+      setComments(formattedComments)
     } catch (error) {
       console.error('加载评论失败:', error)
+      setComments([])
     } finally {
       setLoadingComments(false)
     }
@@ -163,47 +201,79 @@ export default function PostCard({ post }: PostCardProps) {
       return
     }
 
-    if (isRetweeted) {
-      // 取消转发
-      try {
-        await supabase
-          .from('retweets')
-          .delete()
-          .eq('post_id', post.id)
-          .eq('user_id', user.id)
-        
-        setIsRetweeted(false)
-        setRetweetsCount(prev => prev - 1)
-      } catch (error) {
-        console.error('取消转发失败:', error)
-      }
-    } else {
-      // 显示转发对话框
-      setShowRetweetDialog(true)
-    }
+    // 显示转发对话框
+    setShowRetweetDialog(true)
   }
 
   const handleConfirmRetweet = async () => {
     if (!user) return
 
     try {
-      const { error } = await supabase
+      // 获取当前用户的 profile 信息
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('username, nickname, avatar_url')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError || !profile) {
+        console.error('获取用户信息失败:', profileError)
+        alert('无法获取用户信息，请重试')
+        return
+      }
+
+      // 创建转发帖子（包含原帖内容）
+      const retweetContent = retweetComment.trim() 
+        ? `${retweetComment.trim()}\n\n转发 @${post.author_name}: ${post.content}`
+        : `转发 @${post.author_name}: ${post.content}`
+
+      // 创建新帖子
+      const { error: postError } = await supabase
+        .from('posts')
+        .insert({
+          content: retweetContent,
+          user_id: user.id,
+          username: profile.username,
+          author_name: profile.nickname,
+          author_avatar: profile.avatar_url || '',
+          media_url: post.media_url || null,
+          media_type: post.media_type || null,
+          cover_image: post.cover_image || null,
+          likes_count: 0,
+          comments_count: 0,
+          retweets_count: 0
+        })
+
+      if (postError) {
+        console.error('创建转发帖子失败:', postError)
+        throw postError
+      }
+
+      // 记录转发关系（不阻塞主流程）
+      supabase
         .from('retweets')
         .insert({
           post_id: post.id,
           user_id: user.id,
           comment: retweetComment.trim() || null
         })
-      
-      if (error) throw error
-      
+        .then(({ error }) => {
+          if (error) console.error('记录转发关系失败:', error)
+        })
+
+      // 更新本地状态
       setIsRetweeted(true)
       setRetweetsCount(prev => prev + 1)
       setShowRetweetDialog(false)
       setRetweetComment('')
+      
+      // 显示成功提示
+      alert('转发成功！刷新页面查看')
+      
+      // 触发页面刷新（通过 Supabase 实时订阅会自动刷新）
     } catch (error) {
       console.error('转发失败:', error)
-      alert('转发失败')
+      alert('转发失败，请重试')
     }
   }
 
@@ -453,6 +523,7 @@ export default function PostCard({ post }: PostCardProps) {
               className={`flex items-center space-x-2 transition-colors ${
                 isRetweeted ? 'text-green-500' : 'text-secondary hover:text-green-500'
               }`}
+              title={isRetweeted ? '已转发' : '转发'}
             >
               <Repeat2 size={18} />
               <span className="text-sm">{retweetsCount}</span>
@@ -514,7 +585,7 @@ export default function PostCard({ post }: PostCardProps) {
                       />
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
-                          <span className="font-semibold text-sm">{comment.user?.full_name}</span>
+                          <span className="font-semibold text-sm">{comment.user?.nickname || '匿名用户'}</span>
                           <span className="text-xs text-secondary">{formatDate(comment.created_at)}</span>
                         </div>
                         <div className="text-sm text-primary mt-1">{comment.content}</div>

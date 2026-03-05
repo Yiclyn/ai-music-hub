@@ -41,7 +41,7 @@ export type Comment = {
   created_at: string
   user?: {
     username: string
-    full_name: string
+    nickname: string
     avatar_url?: string
   }
 }
